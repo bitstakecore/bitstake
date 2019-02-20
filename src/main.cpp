@@ -2126,11 +2126,11 @@ int64_t GetBlockValue(int nHeight)
     } else if (nHeight <= 315)
     {
         nSubsidy = 1000 * COIN;
-    } else if (nHeight <= LASTPOWBLOCK)
+    } else if (nHeight <= 350)
     {
         nSubsidy = 0;
     } else {
-        nSubsidy = 1;
+        nSubsidy = 1 * COIN;
     }
 
     return nSubsidy;
