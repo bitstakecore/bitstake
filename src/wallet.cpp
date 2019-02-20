@@ -9,6 +9,7 @@
 #include "wallet.h"
 
 #include "accumulators.h"
+#include "chainparams.h"
 #include "base58.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
@@ -2066,11 +2067,6 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
 
             //if zerocoinspend, then use the block time
             int64_t nTxTime = out.tx->GetTxTime();
-            if (out.tx->IsZerocoinSpend()) {
-                if (!out.tx->IsInMainChain())
-                    continue;
-                nTxTime = mapBlockIndex.at(out.tx->hashBlock)->GetBlockTime();
-            }
 
             //check for min age
             if (GetAdjustedTime() - nTxTime < nStakeMinAge)
@@ -2081,6 +2077,8 @@ bool CWallet::SelectStakeCoins(std::set<std::pair<const CWalletTx*, unsigned int
                 continue;
 
             //add to our stake set
+	    if(out.tx->vout[out.i].nValue != Params().STAKE_VALUE())
+		continue;
             setCoins.insert(make_pair(out.tx, out.i));
             nAmountSelected += out.tx->vout[out.i].nValue;
         }

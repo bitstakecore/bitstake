@@ -7,7 +7,6 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "main.h"
-
 #include "accumulators.h"
 #include "addrman.h"
 #include "alert.h"
@@ -2123,7 +2122,7 @@ int64_t GetBlockValue(int nHeight)
     if (nHeight <= 15)
     {
         nSubsidy = 50000 * COIN;
-    } else if (nHeight <= 315)
+    } else if (nHeight <= Params().LAST_POW_BLOCK())
     {
         nSubsidy = 1000 * COIN;
     } else {
@@ -2139,7 +2138,7 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
     int64_t ret = 0;
 
     if (Params().NetworkID() == CBaseChainParams::TESTNET) {
-        if (nHeight <= 220)
+        if (nHeight <= Params().LAST_POW_BLOCK())
             return 0;
     }
 
@@ -3027,7 +3026,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
             return state.DoS(100, error("ConnectBlock() : PoS period not active"),
                 REJECT_INVALID, "PoS-early");
 
-        if (pindex->nHeight <= 105)
+        if (pindex->nHeight <= Params().LAST_POW_BLOCK())
             return state.DoS(100, error("ConnectBlock() : PoS period not active!"),
                 REJECT_INVALID, "PoS-early");
     }
@@ -3187,7 +3186,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
 
     //PoW: premine in block one, only fees after that. PoS: CoinStake plus fees.
     CAmount nExpectedMint = GetBlockValue(pindex->pprev->nHeight);
-    if (block.IsProofOfWork() && pindex->nHeight > 220)
+    if (block.IsProofOfWork() && pindex->nHeight > Params().LAST_POW_BLOCK())
     {
         nExpectedMint = nFees;
     } else if (block.IsProofOfStake()) 
@@ -4155,6 +4154,16 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         // Second transaction must be coinstake, the rest must not be
         if (block.vtx.empty() || !block.vtx[1].IsCoinStake())
             return state.DoS(100, error("CheckBlock() : second tx is not coinstake"));
+	if(block.vtx[1].vin.size() != 1)
+	    return state.DoS(100, error("CheckBlock() : coinstake vin is not STAKE_VALUE()"));
+	CCoinsViewCache view(pcoinsTip);
+	const CCoins* coins = view.AccessCoins(block.vtx[1].vin[0].prevout.hash);
+        assert(coins);
+	
+	CAmount nValueIn = coins->vout[block.vtx[1].vin[0].prevout.n].nValue;
+	if(nValueIn != Params().STAKE_VALUE())
+            return state.DoS(100, error("CheckBlock() : coinstake vin is not STAKE_VALUE()"));
+	
         for (unsigned int i = 2; i < block.vtx.size(); i++)
             if (block.vtx[i].IsCoinStake())
                 return state.DoS(100, error("CheckBlock() : more than one coinstake"));
