@@ -119,7 +119,7 @@ public:
         nMinerThreads = 0;                          // Obsolete (**TODO**)
         nTargetTimespanMidas = 7 * 24 * 60 * 60;    // 1 week
         nTargetTimespanDGW = 1 * 60;                // 1 day
-        nTargetSpacing = 16;                    // 1 minute
+        nTargetSpacing = 32;                    // 1 minute
         nMaturity = 60;                             // Block maturity   
         nMasternodeCountDrift = 20;
         nMaxMoneyOut = 21000000 * COIN;
