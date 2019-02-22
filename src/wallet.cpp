@@ -2832,6 +2832,7 @@ bool CWallet::CreateTransaction(const vector<pair<CScript, CAmount> >& vecSend,
             }
         }
     }
+
     return true;
 }
 
