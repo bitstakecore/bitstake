@@ -9,7 +9,7 @@
 #ifndef BITCOIN_MAIN_H
 #define BITCOIN_MAIN_H
 
-#define STAKE_TIMESTAMP_MASK 8
+#define STAKE_TIMESTAMP_MASK 	7
 #if defined(HAVE_CONFIG_H)
 #include "config/BS-config.h"
 #endif
