@@ -310,7 +310,6 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
     if (setAddress.size() != nAddresses) {
         return DuplicateAddress;
     }
-
     CAmount nBalance = getBalance(coinControl);
 
     if (total > nBalance) {
@@ -333,7 +332,6 @@ WalletModel::SendCoinsReturn WalletModel::prepareTransaction(WalletModelTransact
                 CClientUIInterface::MSG_ERROR);
             return TransactionCreationFailed;
         }
-
         bool fCreated = wallet->CreateTransaction(vecSend, *newTx, *keyChange, nFeeRequired, strFailReason, coinControl, recipients[0].inputType, recipients[0].useSwiftTX);
         transaction.setTransactionFee(nFeeRequired);
 
